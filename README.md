@@ -3,4 +3,4 @@ ReadablePlusPlus
 
 making c++ more readable
 
-this is the beginning of an era
+c++ is not a readable language. This is an effort to just make it more pleasing.
