@@ -37,6 +37,3 @@ public
 
 		for(i in 0..length)
 			deal[i] = change
-
-
-
