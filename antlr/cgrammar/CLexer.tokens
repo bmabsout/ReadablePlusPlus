@@ -115,6 +115,7 @@ MinusAssign=94
 '=='=100
 '_Alignof'=50
 'volatile'=47
+';'=87
 'typedef'=43
 'return'=36
 'for'=28

@@ -490,8 +490,8 @@ selectionStatement
 iterationStatement
     :   'while' '(' expression ')' statement
     |   'do' statement 'while' '(' expression ')' EOStatment
-    |   'for' '(' expression? EOStatment expression? EOStatment expression? ')' statement
-    |   'for' '(' declaration expression? EOStatment expression? ')' statement
+    |   'for' '(' expression? ';' expression? ';' expression? ')' statement
+    |   'for' '(' declaration expression? ';' expression? ')' statement
     ;
 
 jumpStatement

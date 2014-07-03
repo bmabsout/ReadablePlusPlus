@@ -48,7 +48,7 @@ public class CParser extends Parser {
 		"'_Thread_local'", "'('", "')'", "'['", "']'", "'{'", "'}'", "'<'", "'<='", 
 		"'>'", "'>='", "'<<'", "'>>'", "'+'", "'++'", "'-'", "'--'", "'*'", "'/'", 
 		"'%'", "'&'", "'|'", "'&&'", "'||'", "'^'", "'!'", "'~'", "'?'", "':'", 
-		"EOStatment", "','", "'='", "'*='", "'/='", "'%='", "'+='", "'-='", "'<<='", 
+		"';'", "','", "'='", "'*='", "'/='", "'%='", "'+='", "'-='", "'<<='", 
 		"'>>='", "'&='", "'^='", "'|='", "'=='", "'!='", "'->'", "'.'", "'...'", 
 		"Identifier", "Constant", "StringLiteral", "LineDirective", "PragmaDirective", 
 		"Whitespace", "Newline", "BlockComment", "LineComment"
@@ -6362,10 +6362,7 @@ public class CParser extends Parser {
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
-		public TerminalNode EOStatment(int i) {
-			return getToken(CParser.EOStatment, i);
-		}
-		public List<TerminalNode> EOStatment() { return getTokens(CParser.EOStatment); }
+		public TerminalNode EOStatment() { return getToken(CParser.EOStatment, 0); }
 		public IterationStatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
