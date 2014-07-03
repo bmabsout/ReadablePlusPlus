@@ -1,4 +1,4 @@
-// Generated from /media/ssd/Dropbox/ReadablePlusPlus/antlr/C.g4 by ANTLR 4.3
+// Generated from /media/ssd/Dropbox/ReadablePlusPlus/antlr/cgrammar/C.g4 by ANTLR 4.3
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;

@@ -1,19 +1,27 @@
 grammar rpp;
-import unchanged;
+import Constants;
 
-compilationUnit
-    :   externalDeclaration* EOF
-    ;
+program
+:	Class NewLines functions EOF
+|	Class EOF
+|	NewLines? functions EOF
+;
 
-externalDeclaration
-    :   functionDefinition
-    |   declaration
-    |   EOStatment
-    ;
+functions: (function (NewLines function)* )?;
 
-functionDefinition
-    :   declarationSpecifiers? declarator declarationList? compoundStatement
-    ;
+function
+:	Tabs Type Name '(' args ')'
+		('{' body '}' | NewLine Tabs body)
+;
+
+statement
+:	line
+;
+
+line
+:	Operators | Name | Digit | Spaces | Parens | StorageClass | TypeQualifier;
 
 
+args: Type Name+ (',' Type Name+);
 
+body: statement ((';'| NewLine Tabs) statement)+;

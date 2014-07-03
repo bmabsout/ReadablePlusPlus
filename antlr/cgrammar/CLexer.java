@@ -1,4 +1,4 @@
-// Generated from /media/ssd/Dropbox/ReadablePlusPlus/antlr/C.g4 by ANTLR 4.3
+// Generated from /media/ssd/Dropbox/ReadablePlusPlus/antlr/cgrammar/C.g4 by ANTLR 4.3
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
