@@ -16,13 +16,7 @@ Parens       : '(' | ')';
 RightBracket : ']';
 LeftBrace    : '{';
 RightBrace   : '}';
-NewLine
-:   (   '\r' '\n'?
-    |   '\n'
-    )
-    -> skip
-;
-NewLines     : NewLine+;
+NewLine      : '\r\n' | '\r' | '\n';
 
 Assign : '=';
 
@@ -44,9 +38,6 @@ Logic
 |	'>' | '<=' | '>='
 ;
 
-Equal : '==';
-NotEqual : '!=';
-
 Arrow : '->';
 Dot : '.';
 
@@ -65,7 +56,8 @@ Nondigit
 :   [a-zA-Z_]
 ;
 
-fragment
+Anything: . ;
+
 Digit
 :   [0-9]
 ;

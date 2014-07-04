@@ -1,27 +1,39 @@
 grammar rpp;
-import Constants;
 
-program
-:	Class NewLines functions EOF
-|	Class EOF
-|	NewLines? functions EOF
+Pointers     : '*' | '^' | '&';
+Type         : ID Pointers*;
+Digit        : [0-9] ;
+Nondigit     : [a-zA-Z_];
+ID           : Nondigit (Digit|Nondigit)*;
+Anything     : .;
+newLine      : '\r\n' | '\r' | '\n';
+LeftParen    : '(';
+RightParen   : ')';
+Spaces       : ' '+;
+Tab          : '\t';
+Tabs         : Tab+;
+
+program : newLine* (globals | classGlobals)? EOF ;
+
+globals
+:	global (newLine+ global)
 ;
 
-functions: (function (NewLines function)* )?;
+classGlobals
+:	'class' ' ' ID newLine+ Tabs global (newLine+ Tabs global)
+;
+
+global : function; //|	member ;
+
+constructor : ID '(' Spaces args? Spaces ')' body;
 
 function
-:	Tabs Type Name '(' args ')'
-		('{' body '}' | NewLine Tabs body)
-;
+:	(functionStuff ' ')? Type ' ' ID '(' Spaces args? Spaces ')' body;
 
-statement
-:	line
-;
+args: Type ' ' ID+ (',' ' '? Type ' ' ID+ )*;
 
-line
-:	Operators | Name | Digit | Spaces | Parens | StorageClass | TypeQualifier;
+functionStuff : ID (' ' ID)*;
 
+body: newLine+ Tabs line (newLine+ Tabs line|';' line)*;
 
-args: Type Name+ (',' Type Name+);
-
-body: statement ((';'| NewLine Tabs) statement)+;
+line: 'node'+;

@@ -8,17 +8,6 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface rppListener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link rppParser#statement}.
-	 * @param ctx the parse tree
-	 */
-	void enterStatement(@NotNull rppParser.StatementContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link rppParser#statement}.
-	 * @param ctx the parse tree
-	 */
-	void exitStatement(@NotNull rppParser.StatementContext ctx);
-
-	/**
 	 * Enter a parse tree produced by {@link rppParser#body}.
 	 * @param ctx the parse tree
 	 */
@@ -30,15 +19,37 @@ public interface rppListener extends ParseTreeListener {
 	void exitBody(@NotNull rppParser.BodyContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link rppParser#functions}.
+	 * Enter a parse tree produced by {@link rppParser#functionStuff}.
 	 * @param ctx the parse tree
 	 */
-	void enterFunctions(@NotNull rppParser.FunctionsContext ctx);
+	void enterFunctionStuff(@NotNull rppParser.FunctionStuffContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link rppParser#functions}.
+	 * Exit a parse tree produced by {@link rppParser#functionStuff}.
 	 * @param ctx the parse tree
 	 */
-	void exitFunctions(@NotNull rppParser.FunctionsContext ctx);
+	void exitFunctionStuff(@NotNull rppParser.FunctionStuffContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link rppParser#globals}.
+	 * @param ctx the parse tree
+	 */
+	void enterGlobals(@NotNull rppParser.GlobalsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link rppParser#globals}.
+	 * @param ctx the parse tree
+	 */
+	void exitGlobals(@NotNull rppParser.GlobalsContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link rppParser#classGlobals}.
+	 * @param ctx the parse tree
+	 */
+	void enterClassGlobals(@NotNull rppParser.ClassGlobalsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link rppParser#classGlobals}.
+	 * @param ctx the parse tree
+	 */
+	void exitClassGlobals(@NotNull rppParser.ClassGlobalsContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link rppParser#args}.
@@ -63,6 +74,17 @@ public interface rppListener extends ParseTreeListener {
 	void exitProgram(@NotNull rppParser.ProgramContext ctx);
 
 	/**
+	 * Enter a parse tree produced by {@link rppParser#global}.
+	 * @param ctx the parse tree
+	 */
+	void enterGlobal(@NotNull rppParser.GlobalContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link rppParser#global}.
+	 * @param ctx the parse tree
+	 */
+	void exitGlobal(@NotNull rppParser.GlobalContext ctx);
+
+	/**
 	 * Enter a parse tree produced by {@link rppParser#line}.
 	 * @param ctx the parse tree
 	 */
@@ -74,6 +96,17 @@ public interface rppListener extends ParseTreeListener {
 	void exitLine(@NotNull rppParser.LineContext ctx);
 
 	/**
+	 * Enter a parse tree produced by {@link rppParser#newLine}.
+	 * @param ctx the parse tree
+	 */
+	void enterNewLine(@NotNull rppParser.NewLineContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link rppParser#newLine}.
+	 * @param ctx the parse tree
+	 */
+	void exitNewLine(@NotNull rppParser.NewLineContext ctx);
+
+	/**
 	 * Enter a parse tree produced by {@link rppParser#function}.
 	 * @param ctx the parse tree
 	 */
@@ -83,4 +116,15 @@ public interface rppListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunction(@NotNull rppParser.FunctionContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link rppParser#constructor}.
+	 * @param ctx the parse tree
+	 */
+	void enterConstructor(@NotNull rppParser.ConstructorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link rppParser#constructor}.
+	 * @param ctx the parse tree
+	 */
+	void exitConstructor(@NotNull rppParser.ConstructorContext ctx);
 }
