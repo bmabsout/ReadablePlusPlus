@@ -1,39 +1,66 @@
 grammar rpp;
 
-Pointers     : '*' | '^' | '&';
-Type         : ID Pointers*;
-Digit        : [0-9] ;
-Nondigit     : [a-zA-Z_];
-ID           : Nondigit (Digit|Nondigit)*;
-Anything     : .;
-newLine      : '\r\n' | '\r' | '\n';
-LeftParen    : '(';
-RightParen   : ')';
-Spaces       : ' '+;
-Tab          : '\t';
-Tabs         : Tab+;
+program : NewLine* (globals | classGlobals)? NewLine* EOF ;
 
-program : newLine* (globals | classGlobals)? EOF ;
-
-globals
-:	global (newLine+ global)
-;
+globals: global (NewLine+ global)* ;
 
 classGlobals
-:	'class' ' ' ID newLine+ Tabs global (newLine+ Tabs global)
+:	'class ' name lineTabs global (lineTabs global)*
 ;
 
 global : function; //|	member ;
 
-constructor : ID '(' Spaces args? Spaces ')' body;
+constructor : name '(' Spaces? args? Spaces? ')' body;
 
 function
-:	(functionStuff ' ')? Type ' ' ID '(' Spaces args? Spaces ')' body;
+:	(functionStuff ' ')? type ' ' name '(' Spaces? args? Spaces? ')'
+		(lineTabs|' ')body
+;
 
-args: Type ' ' ID+ (',' ' '? Type ' ' ID+ )*;
+args: type ' ' name (',' ' '? type ' ' name )*;
 
 functionStuff : ID (' ' ID)*;
 
-body: newLine+ Tabs line (newLine+ Tabs line|';' line)*;
+body
+:	line (lineTabs line|';' line)*
+;
 
-line: 'node'+;
+line: 'node' | statement;
+
+statement: ifStatement | whileStatement;
+
+ifStatement//maybe allow () for intuitiveness
+:	'if' statementHelper body
+		((lineTabs|';') 'elif' statementHelper body )*
+		((lineTabs|';') 'else' (' '|lineTabs) body)?
+;
+
+whileStatement
+:	'while' statementHelper body
+|	'do' (' '|lineTabs) body (lineTabs|';') 'while' ' ' logicExpression
+;
+
+statementHelper
+:	' ' logicExpression lineTabs
+|	' '? '(' Spaces logicExpression Spaces ')' ' '
+;
+
+logicExpression : Logic;
+Logic
+:	'||' | '&&' | '!=' | '==' | '<'
+|	'>' | '<=' | '>='
+;
+
+Pointers     : '*' | '^' | '&';
+type         : ID Pointers*;
+Digit        : [0-9];
+Nondigit     : [a-zA-Z_];
+name         : ID;
+ID           : Nondigit (Digit|Nondigit)*;
+NewLine      : '\r\n' | '\r' | '\n';
+lineTabs     : NewLine+ tabs;
+LeftParen    : '(';
+RightParen   : ')';
+Spaces       : ' '+;
+tabs         : '\t'+;
+
