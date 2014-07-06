@@ -10,7 +10,7 @@ c++ is not a readable language. This is an effort to just make it more pleasing.
 ```python
 class Sample
 public
-	int* a b c d = NULL
+	int*|a b c d = NULL
 
 	Sample()
 		Sample 1 2 3
@@ -29,13 +29,18 @@ public
 			case 6
 				print "it is 6"
 
-		int deal[] = {1 2 3 4 5}
-		int length = 5
+		int[]|deal nodeal = 1 2 3 4 5
+		int{length 5} {size 6} width
 
-		int sum =
+		float|
+			radius 5.3
+			x 6.6
+			y 7.7
+
+		int|sum
 			deal |> multiplyBy 4 |> sum |> add1
 
-		int change =
+		int|change
 			if yes - sum > 36
 				24
 			elif sum*sum < 4
@@ -110,8 +115,15 @@ void doStuff(int yes)
 			break;
 	}
 
-	int deal[] = {1, 2, 3, 4, 5};
+	int[] deal = {1, 2, 3, 4, 5};
+	int[] nodeal = {1, 2, 3, 4, 5};
 	int length = 5;
+	int size = 6;
+	int width;
+
+	float radius = 5.3;
+	float x = 6.6;
+	float y = 7.7;
 
 	int sum = sum(multiplyBy(4,add1(deal)));
 
