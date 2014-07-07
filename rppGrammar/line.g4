@@ -7,6 +7,7 @@ Pointers     : '*' | '^' | '&';
 type         : ID Pointers*;
 name         : ID;
 ID           : Nondigit (Digit|Nondigit)*;
+ANSA         : (Digit|Nondigit)+;
 Digit        : [0-9];
 Nondigit     : [a-zA-Z_];
 NewLine      : '\r\n' | '\r' | '\n';
@@ -24,15 +25,16 @@ assign
 	|	' '* closedItem ' '+ linemix)
 	(lineTabs (linemix|lineAssign))*
 ;
+
 multipleDeclare: name (' ' name)+;
 
-closedItem: '{'(' '* multipleDeclare ' '* '=' ' '* |' '* name ' '+ ID)'}';
+closedItem: '{'(' '* multipleDeclare ' '* '=' ' '* ANSA |' '* name ' '+ ANSA)'}';
 
 lineDeclare: name|multipleDeclare;
 
-lineAssign: lineDeclare (' '* '=' ' '* (ID|functionCall));
+lineAssign: lineDeclare (' '* '=' ' '* (ANSA|functionCall));
 
 linemix: (closedItem|lineDeclare) (' '+ (closedItem|lineDeclare))*;
 
-stuffList    : (ID|'('functionCall')') (' ' (ID|'('functionCall')') )*;
+stuffList : (ANSA|'('functionCall')') (' ' (ANSA|'('functionCall')') )*;
 functionCall : name ' ' stuffList | '(' name ')';

@@ -1,0 +1,23 @@
+Thing=15
+NewLine=10
+ANSA=7
+Spaces=4
+T__1=2
+Pointers=5
+LeftBrace=13
+T__0=3
+T__2=1
+LeftParen=11
+ID=6
+Digit=8
+RightParen=12
+Nondigit=9
+RightBrace=14
+'|'=15
+'}'=14
+'='=3
+'('=11
+')'=12
+'{'=13
+' '=2
+'\t'=1
