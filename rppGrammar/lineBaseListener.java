@@ -1,4 +1,4 @@
-// Generated from C:\Users\bassel\Dropbox\ReadablePlusPlus\antlr\rppgrammar\line.g4 by ANTLR 4.3
+// Generated from /media/ssd/Dropbox/ReadablePlusPlus/rppGrammar/line.g4 by ANTLR 4.3
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.misc.NotNull;
@@ -11,6 +11,19 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * of the available methods.
  */
 public class lineBaseListener implements lineListener {
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAssigns(@NotNull lineParser.AssignsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAssigns(@NotNull lineParser.AssignsContext ctx) { }
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -36,6 +49,58 @@ public class lineBaseListener implements lineListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitAssign(@NotNull lineParser.AssignContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDeclarator(@NotNull lineParser.DeclaratorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDeclarator(@NotNull lineParser.DeclaratorContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFunctionArgs(@NotNull lineParser.FunctionArgsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFunctionArgs(@NotNull lineParser.FunctionArgsContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLine(@NotNull lineParser.LineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLine(@NotNull lineParser.LineContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpr(@NotNull lineParser.ExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpr(@NotNull lineParser.ExprContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
@@ -68,19 +133,6 @@ public class lineBaseListener implements lineListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterStuffList(@NotNull lineParser.StuffListContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitStuffList(@NotNull lineParser.StuffListContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterFunctionCall(@NotNull lineParser.FunctionCallContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -94,13 +146,13 @@ public class lineBaseListener implements lineListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLineDeclare(@NotNull lineParser.LineDeclareContext ctx) { }
+	@Override public void enterFunctionNoArgs(@NotNull lineParser.FunctionNoArgsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLineDeclare(@NotNull lineParser.LineDeclareContext ctx) { }
+	@Override public void exitFunctionNoArgs(@NotNull lineParser.FunctionNoArgsContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
@@ -146,6 +198,19 @@ public class lineBaseListener implements lineListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterClosedExpr(@NotNull lineParser.ClosedExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitClosedExpr(@NotNull lineParser.ClosedExprContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterClosedItem(@NotNull lineParser.ClosedItemContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -153,19 +218,6 @@ public class lineBaseListener implements lineListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitClosedItem(@NotNull lineParser.ClosedItemContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterMultipleDeclare(@NotNull lineParser.MultipleDeclareContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMultipleDeclare(@NotNull lineParser.MultipleDeclareContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

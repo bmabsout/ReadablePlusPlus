@@ -1,4 +1,4 @@
-// Generated from C:\Users\bassel\Dropbox\ReadablePlusPlus\antlr\rppgrammar\line.g4 by ANTLR 4.3
+// Generated from /media/ssd/Dropbox/ReadablePlusPlus/rppGrammar/line.g4 by ANTLR 4.3
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -7,6 +7,17 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  * {@link lineParser}.
  */
 public interface lineListener extends ParseTreeListener {
+	/**
+	 * Enter a parse tree produced by {@link lineParser#assigns}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssigns(@NotNull lineParser.AssignsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link lineParser#assigns}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssigns(@NotNull lineParser.AssignsContext ctx);
+
 	/**
 	 * Enter a parse tree produced by {@link lineParser#lineTabs}.
 	 * @param ctx the parse tree
@@ -28,6 +39,50 @@ public interface lineListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitAssign(@NotNull lineParser.AssignContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link lineParser#declarator}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeclarator(@NotNull lineParser.DeclaratorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link lineParser#declarator}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeclarator(@NotNull lineParser.DeclaratorContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link lineParser#functionArgs}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunctionArgs(@NotNull lineParser.FunctionArgsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link lineParser#functionArgs}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunctionArgs(@NotNull lineParser.FunctionArgsContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link lineParser#line}.
+	 * @param ctx the parse tree
+	 */
+	void enterLine(@NotNull lineParser.LineContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link lineParser#line}.
+	 * @param ctx the parse tree
+	 */
+	void exitLine(@NotNull lineParser.LineContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link lineParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpr(@NotNull lineParser.ExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link lineParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpr(@NotNull lineParser.ExprContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link lineParser#type}.
@@ -52,17 +107,6 @@ public interface lineListener extends ParseTreeListener {
 	void exitLineAssign(@NotNull lineParser.LineAssignContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link lineParser#stuffList}.
-	 * @param ctx the parse tree
-	 */
-	void enterStuffList(@NotNull lineParser.StuffListContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link lineParser#stuffList}.
-	 * @param ctx the parse tree
-	 */
-	void exitStuffList(@NotNull lineParser.StuffListContext ctx);
-
-	/**
 	 * Enter a parse tree produced by {@link lineParser#functionCall}.
 	 * @param ctx the parse tree
 	 */
@@ -74,15 +118,15 @@ public interface lineListener extends ParseTreeListener {
 	void exitFunctionCall(@NotNull lineParser.FunctionCallContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link lineParser#lineDeclare}.
+	 * Enter a parse tree produced by {@link lineParser#functionNoArgs}.
 	 * @param ctx the parse tree
 	 */
-	void enterLineDeclare(@NotNull lineParser.LineDeclareContext ctx);
+	void enterFunctionNoArgs(@NotNull lineParser.FunctionNoArgsContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link lineParser#lineDeclare}.
+	 * Exit a parse tree produced by {@link lineParser#functionNoArgs}.
 	 * @param ctx the parse tree
 	 */
-	void exitLineDeclare(@NotNull lineParser.LineDeclareContext ctx);
+	void exitFunctionNoArgs(@NotNull lineParser.FunctionNoArgsContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link lineParser#linemix}.
@@ -118,6 +162,17 @@ public interface lineListener extends ParseTreeListener {
 	void exitName(@NotNull lineParser.NameContext ctx);
 
 	/**
+	 * Enter a parse tree produced by {@link lineParser#closedExpr}.
+	 * @param ctx the parse tree
+	 */
+	void enterClosedExpr(@NotNull lineParser.ClosedExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link lineParser#closedExpr}.
+	 * @param ctx the parse tree
+	 */
+	void exitClosedExpr(@NotNull lineParser.ClosedExprContext ctx);
+
+	/**
 	 * Enter a parse tree produced by {@link lineParser#closedItem}.
 	 * @param ctx the parse tree
 	 */
@@ -127,17 +182,6 @@ public interface lineListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitClosedItem(@NotNull lineParser.ClosedItemContext ctx);
-
-	/**
-	 * Enter a parse tree produced by {@link lineParser#multipleDeclare}.
-	 * @param ctx the parse tree
-	 */
-	void enterMultipleDeclare(@NotNull lineParser.MultipleDeclareContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link lineParser#multipleDeclare}.
-	 * @param ctx the parse tree
-	 */
-	void exitMultipleDeclare(@NotNull lineParser.MultipleDeclareContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link lineParser#tabs}.

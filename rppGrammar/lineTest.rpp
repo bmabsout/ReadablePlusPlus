@@ -1,0 +1,7 @@
+int| a {b 3} {c d = fun 3} float|f {g (fun h)}
+
+double{i = fun 5 4 (fun j)}
+	k = fun 3
+	l = (fun)
+	m n triple|a
+

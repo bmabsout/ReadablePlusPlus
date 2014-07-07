@@ -1,0 +1,10 @@
+int|f g h
+
+static
+	float{b 3} g
+	int|s m {n o = fun (fun2 3)}
+
+int main()
+	int| a {b 3}
+	if ==
+		float| a = fun callMe
