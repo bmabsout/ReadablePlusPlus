@@ -1,6 +1,6 @@
 grammar rpp;
 
-program : NewLine* (globals | classGlobals)? NewLine* EOF ;
+compilationUnit : NewLine* (globals | classGlobals)? NewLine* EOF ;
 
 globals: global (NewLine+ global)* ;
 
@@ -67,22 +67,28 @@ expr         : Number|name|functionCall;
 
 //-----------------------------------
 
-statement: ifStatement | whileStatement;
+statement: ifStatement | whileStatement | switchStatement;
 
 ifStatement//maybe allow () for intuitiveness
-:	'if' statementHelper body
-		((lineTabs|';') 'elif' statementHelper body )*
-		((lineTabs|';') 'else' (' '|lineTabs) body)?
+:	'if' statementLogic body
+		( (lineTabs|' '+) 'elif' statementLogic body )*
+		( (lineTabs|' '+) 'else' (' '|lineTabs) body )?
 ;
 
 whileStatement
-:	'while' statementHelper body
-|	'do' (' '|lineTabs) body (lineTabs|';') 'while' ' ' logicExpression
+:	'while' statementLogic body
+|	'do' (' '+|lineTabs) body (lineTabs|' '+) 'while' ' ' logicExpression
 ;
 
-statementHelper
-:	' ' logicExpression lineTabs
-|	' '? '(' Spaces logicExpression Spaces ')' ' '
+switchStatement
+:	'switch' ' '+ expr (lineTabs 'case' ' '+ cases (lineTabs|' '* ':' ' '*) body )+
+;
+
+cases: closedExpr ( ' '+ closedExpr)*;
+
+statementLogic
+:	' '+ logicExpression lineTabs
+|	' '* '(' Spaces logicExpression Spaces ')' ' '*
 ;
 
 logicExpression : Logic;

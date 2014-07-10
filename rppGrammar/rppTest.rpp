@@ -8,3 +8,8 @@ int main()
 	int| a {b 3}
 	if ==
 		float| a = fun callMe
+	elif !=
+		switch fun yes
+			case 1 2 3
+				print no
+			case 5: print yes
