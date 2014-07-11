@@ -57,19 +57,47 @@ tokens { INDENT, DEDENT }
 compilationUnit : NewLine* (globals | classGlobals)? NewLine* EOF ;
 
 globals: global (NewLine+ global)* ;
-
+global : function | member;
+//----------------class related-------------------------------------
 classGlobals
-:	'class ' name NewLine+ classScope
+:	'class' ' '+ name NewLine+ classScope
 ;
 
 classScope
-:	INDENT (global NewLine+)+ DEDENT
+:	INDENT ((global|constructor|destructor) NewLine+)+ DEDENT
 ;
 
-global : function | member;
-
 constructor : name functionDefinition;
+destructor : '~' name functionDefinition;
 
+//----------------class related-------------------------------------
+memberScope: INDENT (member NewLine)+ DEDENT;
+
+member
+:	memberSpecifiers NewLine memberScope
+|	(memberSpecifiers ' '+)? type
+		' '* '|'
+		(
+			' '* declarator (NewLine decleratorScope)?
+		|	NewLine decleratorScope
+		)
+|	staticMemberSpecifiers NewLine typeScope
+|	staticMemberSpecifiers ' '+ assign
+;
+
+staticMemberSpecifiers: (memberSpecifier ' '+)* 'static' (' '+ memberSpecifier)*;
+memberSpecifiers: memberSpecifier (' '+ memberSpecifier)*;
+memberSpecifier
+:	'typedef'
+|	'extern'
+|	'_Thread_local'
+|	'auto'
+|	'register'
+|	TypeQualifier
+;
+
+
+//----------------function declaration rules------------------------
 function
 :	functionSpecifiers? type ' ' name functionDefinition
 ;
@@ -106,11 +134,12 @@ functionDefinition
 	|	NewLine argScope NewLine+ '='
 		(
 			' '* flat (NewLine scope)?
-		|	equals NewLine? scope
+		|	equals? NewLine? scope
 		|	scope
 		)
 	)
 ;
+//----------------function declaration rules------------------------
 
 equals: '='+;
 
@@ -129,30 +158,6 @@ scope
 line: statement | assign | functionCall;
 //-------------------line-------------
 
-memberScope: INDENT (member NewLine)+ DEDENT;
-
-member
-:	memberSpecifiers NewLine memberScope
-|	(memberSpecifiers ' '+)? type
-		' '* '|'
-		(
-			' '* declarator (NewLine decleratorScope)?
-		|	NewLine decleratorScope
-		)
-|	staticMemberSpecifiers NewLine typeScope
-|	staticMemberSpecifiers ' '+ assign
-;
-
-staticMemberSpecifiers: (memberSpecifier ' '+)* 'static' (' '+ memberSpecifier)*;
-memberSpecifiers: memberSpecifier (' '+ memberSpecifier)*;
-memberSpecifier
-:	'typedef'
-|	'extern'
-|	'_Thread_local'
-|	'auto'
-|	'register'
-|	typeQualifier
-;
 
 typeScope: INDENT (assign NewLine+)+ DEDENT;
 
@@ -193,7 +198,6 @@ linemix: (closedItem|declarator) (' '+ (closedItem|declarator))*;
 closedExpr   : Number | name | '('functionCall')';
 expr         : Number | name | functionCall;
 
-//-----------------------------------
 
 statement: ifStatement | whileStatement | switchStatement;
 
@@ -237,11 +241,11 @@ Logic
 declarationSpecifiers: declarationSpecifier (' ' declarationSpecifier)*;
 
 declarationSpecifier
-:	storageClassSpecifier
-|	typeQualifier
+:	StorageClassSpecifier
+|	TypeQualifier
 ;
 
-storageClassSpecifier
+StorageClassSpecifier
 :	'typedef'
 |	'extern'
 |	'static'
@@ -250,7 +254,7 @@ storageClassSpecifier
 |	'register'
 ;
 
-typeQualifier
+TypeQualifier
 :	'const'
 |	'restrict'
 |	'volatile'
