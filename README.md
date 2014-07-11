@@ -10,7 +10,7 @@ c++ is not a readable language. This is an effort to just make it more pleasing 
 ```python
 class Sample
 public
-	int*|a b c d = NULL
+	static int*|a b c d = NULL
 
 	Sample()
 		Sample 1 2 3
@@ -33,9 +33,9 @@ public
 		int{length 5} {size 6} width
 
 		float|
-			radius 5.3
-			x 6.6
-			y 7.7
+			radius = 5.3
+			x = 6.6
+			y = 7.7
 
 		int|sum
 			deal |> multiplyBy 4 |> sum |> add1
@@ -75,10 +75,10 @@ void doStuff(int yes);
 ```c++
 #include "Sample.hpp"
 
-int* a = NULL;
-int* b = NULL;
-int* c = NULL;
-int* d = NULL;
+static int* a = NULL;
+static int* b = NULL;
+static int* c = NULL;
+static int* d = NULL;
 
 void Sample::constructorOverloading(int first, int second, float third)
 {
