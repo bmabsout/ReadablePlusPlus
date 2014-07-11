@@ -64,13 +64,13 @@ functionCall: name (' ' closedExpr)*;
 functionArgs: name (' ' closedExpr)+;
 functionNoArgs: name;
 
-assignScope: INDENT assignLine (NewLine+ assignLine)* NewLine* DEDENT;
+assignScope: INDENT (assignLine NewLine+)+ DEDENT;
 assignLine: lineAssign | declarator (' '+ linemix)?;
 
 assign
 :	type '|' ' '* assignLine
-|	type '|' NewLine assignScope
-|	type ' '* closedItem (NewLine assignScope|' '+ linemix)?
+|	type '|' (' '* assignLine)? NewLine assignScope
+|	type ' '* closedItem (' '+ linemix)? (NewLine assignScope)?
 ;
 
 declarator: name (' ' name)*;
