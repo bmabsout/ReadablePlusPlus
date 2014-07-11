@@ -70,12 +70,12 @@ global : function | member;
 
 constructor : name functionDefinition;
 
-function//enforce me
+function
 :	functionSpecifiers? type ' ' name functionDefinition
 ;
 
 argLine
-:	declarationSpecifiers? type
+:	(declarationSpecifiers ' '+)? type
 	(
 		(
 			' '+ assignLine
@@ -84,11 +84,12 @@ argLine
 		(NewLine assignScope)?
 	|	NewLine assignScope
 	)
+|	declarationSpecifiers NewLine argScope
 ;
 
 argFlatLine
-:	declarationSpecifiers? type (' '+ linemix| closedItem (' '+ linemix)?)
-		(' '* '|' ' '* declarationSpecifiers? type ' '+ linemix)*
+:	(declarationSpecifiers ' '+)? type (' '+ linemix| closedItem (' '+ linemix)?)
+		(' '* '|' ' '* (declarationSpecifiers ' '+)? type ' '+ linemix)*
 ;
 
 argScope
@@ -128,21 +129,29 @@ scope
 line: statement | assign | functionCall;
 //-------------------line-------------
 
+memberScope: INDENT (member NewLine)+ DEDENT;
+
 member
-:	declarationSpecifiers? type '|'
-	(
-    	NewLine decleratorScope
-	|	' '* declarator (NewLine decleratorScope)?
-	)
-|	staticMember
+:	memberSpecifiers NewLine memberScope
+|	(memberSpecifiers ' '+)? type
+		' '* '|'
+		(
+			' '* declarator (NewLine decleratorScope)?
+		|	NewLine decleratorScope
+		)
+|	staticMemberSpecifiers NewLine typeScope
+|	staticMemberSpecifiers ' '+ assign
 ;
 
-staticMember
-:	'static'
-	(
-		' '+ assign (NewLine typeScope)?
-	|	NewLine typeScope
-	)
+staticMemberSpecifiers: (memberSpecifier ' '+)* 'static' (' '+ memberSpecifier)*;
+memberSpecifiers: memberSpecifier (' '+ memberSpecifier)*;
+memberSpecifier
+:	'typedef'
+|	'extern'
+|	'_Thread_local'
+|	'auto'
+|	'register'
+|	typeQualifier
 ;
 
 typeScope: INDENT (assign NewLine+)+ DEDENT;
@@ -151,13 +160,14 @@ functionCall: name (' ' closedExpr)*;
 functionArgs: name (' ' closedExpr)+;
 functionNoArgs: name;
 
-assignScope: INDENT ((assignLine|linemix) NewLine)+ DEDENT;
+assignScope: INDENT ((assignLine|linemix) NewLine+)+ DEDENT;
 assignLine: lineAssign | declarator (' '+ linemix)?;
 
 assign
-:	declarationSpecifiers? type
+:	declarationSpecifiers NewLine typeScope
+|	(declarationSpecifiers ' '+)? type
 	(
-		'|'
+		' '* '|'
 		(
 			' '* assignLine (NewLine assignScope)?
 		|	NewLine assignScope
@@ -224,7 +234,7 @@ Logic
 |	'>' | '<=' | '>='
 ;
 
-declarationSpecifiers: (declarationSpecifier ' ')+;
+declarationSpecifiers: declarationSpecifier (' ' declarationSpecifier)*;
 
 declarationSpecifier
 :	storageClassSpecifier
