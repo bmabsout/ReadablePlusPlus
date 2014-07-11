@@ -59,7 +59,7 @@ compilationUnit : NewLine* (globals | classGlobals)? NewLine* EOF ;
 globals: global (NewLine+ global)* ;
 
 classGlobals
-:	'class ' name classScope
+:	'class ' name NewLine+ classScope
 ;
 
 classScope
@@ -68,37 +68,81 @@ classScope
 
 global : function | member;
 
-constructor : name '(' Spaces? args? Spaces? ')' body;
+constructor : name functionDefinition;
 
 function//enforce me
-:	(functionStuff ' ')? type ' ' name '(' Spaces? args? Spaces? ')'
-		(' ' line (NewLine scope)?|NewLine scope)
+:	functionSpecifiers? type ' ' name functionDefinition
 ;
 
-args: type ' ' name (',' ' '? type ' ' name )*;
+argLine
+:	declarationSpecifiers? type
+	(
+		(
+			' '+ assignLine
+		|	' '* closedItem (' '+ linemix)?
+		)
+		(NewLine assignScope)?
+	|	NewLine assignScope
+	)
+;
 
-functionStuff : ID (' ' ID)*;
+argFlatLine
+:	declarationSpecifiers? type (' '+ linemix| closedItem (' '+ linemix)?)
+		(' '* '|' ' '* declarationSpecifiers? type ' '+ linemix)*
+;
+
+argScope
+:	INDENT ((argLine|argFlatLine) NewLine+)+ DEDENT
+;
+
+functionDefinition
+:	(' '+ argFlatLine)?
+	(
+		(
+			NewLine scope
+		|	' '* '=' ' '* flat (NewLine scope)?
+		)
+	|	NewLine argScope NewLine+ '='
+		(
+			' '* flat (NewLine scope)?
+		|	equals NewLine? scope
+		|	scope
+		)
+	)
+;
+
+equals: '='+;
 
 body
-:	line (NewLine line|';' line)*
+:	flat (NewLine+ flat)*
+;
+
+flat
+:	line (';' line)*
 ;
 
 scope
 :	INDENT body NewLine+ DEDENT
 ;
 
-line: 'node' | statement | assign | functionCall;
+line: statement | assign | functionCall;
 //-------------------line-------------
 
 member
-:	type '|' NewLine decleratorScope
-|	type '|' ' '* declarator (NewLine decleratorScope)?
+:	declarationSpecifiers? type '|'
+	(
+    	NewLine decleratorScope
+	|	' '* declarator (NewLine decleratorScope)?
+	)
 |	staticMember
 ;
 
 staticMember
-:	'static' ' '+ assign (NewLine typeScope)?
-|	'static' NewLine typeScope
+:	'static'
+	(
+		' '+ assign (NewLine typeScope)?
+	|	NewLine typeScope
+	)
 ;
 
 typeScope: INDENT (assign NewLine+)+ DEDENT;
@@ -107,20 +151,27 @@ functionCall: name (' ' closedExpr)*;
 functionArgs: name (' ' closedExpr)+;
 functionNoArgs: name;
 
-assignScope: INDENT (assignLine NewLine)+ DEDENT;
+assignScope: INDENT ((assignLine|linemix) NewLine)+ DEDENT;
 assignLine: lineAssign | declarator (' '+ linemix)?;
 
 assign
-:	type '|' ' '* assignLine (NewLine assignScope)?
-|	type '|' NewLine assignScope
-|	type ' '* closedItem (' '+ linemix)? (NewLine assignScope)?
+:	declarationSpecifiers? type
+	(
+		'|'
+		(
+			' '* assignLine (NewLine assignScope)?
+		|	NewLine assignScope
+		)
+	|	' '* closedItem (' '+ linemix)? (NewLine assignScope)?
+	)
 ;
 
 declarator: name (' ' name)*;
-decleratorScope: INDENT (declarator NewLine+) DEDENT;
+decleratorScope: INDENT (declarator NewLine+)+ DEDENT;
 
 closedItem: '{' ' '* declarator ' '+
-	(	closedExpr
+	(
+		closedExpr
 	|	'=' ' '+ expr
 	) ' '* '}'
 ;
@@ -129,8 +180,8 @@ lineAssign: declarator (' '* '=' ' '* (expr|functionArgs|'('functionNoArgs')'));
 
 linemix: (closedItem|declarator) (' '+ (closedItem|declarator))*;
 
-closedExpr   : Number|name|'('functionCall')';
-expr         : Number|name|functionCall;
+closedExpr   : Number | name | '('functionCall')';
+expr         : Number | name | functionCall;
 
 //-----------------------------------
 
@@ -139,12 +190,12 @@ statement: ifStatement | whileStatement | switchStatement;
 ifStatement//maybe allow () for intuitiveness
 :	'if' statementHelper
 		( (NewLine|' '+) 'elif' statementHelper )*
-		( (NewLine|' '+) 'else' (' '|NewLine) body )?
+		( (NewLine|' '+) 'else' (' '+ flat (NewLine scope)?|NewLine scope) )?
 ;
 
 whileStatement
 :	'while' statementHelper
-|	'do' (' '+ body|NewLine scope) (NewLine+|' '+) 'while' ' ' logicExpression
+|	'do' (' '+ flat (NewLine scope)?|NewLine scope) (NewLine+|' '+) 'while' ' ' logicExpression
 ;
 
 switchStatement
@@ -165,15 +216,50 @@ statementHelper
 |	' '* '(' Spaces logicExpression Spaces ')' ' '* body
 ;
 
-logicExpression : Logic;
+logicExpression : Logic|'=';
+
+
 Logic
-:	'||' | '&&' | '!=' | '==' | '<'
+:	'||' | '&&' | '!=' | '<'
 |	'>' | '<=' | '>='
 ;
 
+declarationSpecifiers: (declarationSpecifier ' ')+;
+
+declarationSpecifier
+:	storageClassSpecifier
+|	typeQualifier
+;
+
+storageClassSpecifier
+:	'typedef'
+|	'extern'
+|	'static'
+|	'_Thread_local'
+|	'auto'
+|	'register'
+;
+
+typeQualifier
+:	'const'
+|	'restrict'
+|	'volatile'
+|	'_Atomic'
+;
+
+functionSpecifiers: ((functionSpecifier|declarationSpecifier) ' ')+;
+
+functionSpecifier
+:	('inline'
+|	'_Noreturn'
+|	'__inline__' // GCC extension
+|	'__stdcall')
+|	'__declspec' '(' ID ')'
+;
 
 Number       : Digit (Digit|NonDigit)*;
-TABS         : '\t'+;
+
+Equal        : '=';
 Spaces       : ' '+;
 Pointers     : '*' | '^' | '&';
 type         : ID Pointers*;
@@ -186,6 +272,21 @@ RightParen   : ')';
 LeftBrace    : '{';
 RightBrace   : '}';
 Thing        : '|';
+
+TABS
+:	'\t'+
+	{
+		int next = _input.LA(1);
+		int indent = getIndentationCount(getText());
+		int previous = indents.isEmpty() ? 0 : indents.peek();
+		if(indent>previous)
+		{
+				indents.push(indent);
+				emit(new CommonToken(rppParser.INDENT, "INDENT"));
+		}
+	}
+;
+
 NewLine
 :	('\n' | '\r' | '\r\n') TABS?
 	{

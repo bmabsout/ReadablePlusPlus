@@ -1,15 +1,21 @@
-int|f g h
+class name
+	int|f g h
 
-static
-	float{b 3} g
-	int|s m {n o = fun (fun2 3)}
+	static
+		float{b 3} g
+		int|s m {n o = fun (fun2 3)}
 
-int main()
-	int| a {b 3}
-	if ==
-		float| a = fun callMe
-	elif !=
-		switch fun yes
-			case 1 2 3
-				print no
-			case 5: print yes
+	int main
+		const int pain = 3
+			chain
+		float kain = 4
+			{chain sain 6} lain
+	=========
+		int| a {b 3}
+		if =
+			float| a = fun callMe
+		elif !=
+			switch fun yes
+				case 1 2 3
+					print no
+				case 5: print yes
