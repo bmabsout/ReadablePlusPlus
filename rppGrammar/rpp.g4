@@ -21,7 +21,6 @@ tokens { INDENT, DEDENT }
 	@Override
 	public Token nextToken()
 	{
-
 		// Check if the end-of-file is ahead and there are still some DEDENTS expected.
 		if (_input.LA(1) == EOF && !this.indents.isEmpty())
 		{
@@ -82,7 +81,7 @@ member
 		|	NewLine decleratorScope
 		)
 |	staticMemberSpecifiers NewLine typeScope
-|	staticMemberSpecifiers ' '+ assign
+|	staticMemberSpecifiers ' '+ initialize
 ;
 
 staticMemberSpecifiers: (memberSpecifier ' '+)* 'static' (' '+ memberSpecifier)*;
@@ -93,7 +92,7 @@ memberSpecifier
 |	'_Thread_local'
 |	'auto'
 |	'register'
-|	TypeQualifier
+|	typeQualifier
 ;
 
 
@@ -109,8 +108,8 @@ argLine
 			' '+ assignLine
 		|	' '* closedItem (' '+ linemix)?
 		)
-		(NewLine assignScope)?
-	|	NewLine assignScope
+		(NewLine initializeScope)?
+	|	NewLine initializeScope
 	)
 |	declarationSpecifiers NewLine argScope
 ;
@@ -155,29 +154,29 @@ scope
 :	INDENT body NewLine+ DEDENT
 ;
 
-line: statement | assign | functionCall;
+line: statement | initialize | assignment | functionCall | expr;
 //-------------------line-------------
 
 
-typeScope: INDENT (assign NewLine+)+ DEDENT;
+typeScope: INDENT (initialize NewLine+)+ DEDENT;
 
 functionCall: name (' ' closedExpr)*;
 functionArgs: name (' ' closedExpr)+;
 functionNoArgs: name;
 
-assignScope: INDENT ((assignLine|linemix) NewLine+)+ DEDENT;
+initializeScope: INDENT ((assignLine|linemix) NewLine+)+ DEDENT;
 assignLine: lineAssign | declarator (' '+ linemix)?;
 
-assign
+initialize
 :	declarationSpecifiers NewLine typeScope
 |	(declarationSpecifiers ' '+)? type
 	(
 		' '* '|'
 		(
-			' '* assignLine (NewLine assignScope)?
-		|	NewLine assignScope
+			' '* assignLine (NewLine initializeScope)?
+		|	NewLine initializeScope
 		)
-	|	' '* closedItem (' '+ linemix)? (NewLine assignScope)?
+	|	' '* closedItem (' '+ linemix)? (NewLine initializeScope)?
 	)
 ;
 
@@ -194,12 +193,27 @@ closedItem: '{' ' '* declarator ' '+
 lineAssign: declarator (' '* '=' ' '* (expr|functionArgs|'('functionNoArgs')'));
 
 linemix: (closedItem|declarator) (' '+ (closedItem|declarator))*;
+//-------------------------------expression related-------------------------
+closedExpr : Number | name | '('functionCall')';
+expr       : Number | name | functionCall;
+assignment : unaryExprs ' '* assignmentOperator ' '* expr;
 
-closedExpr   : Number | name | '('functionCall')';
-expr         : Number | name | functionCall;
+unaryExprs: unaryExpr (' '+ unaryExpr)*;
 
+unaryExpr
+:	prefixOperator? name postfixOperator?
+;
 
-statement: ifStatement | whileStatement | switchStatement;
+postfixOperator: '++' | '--' | '[' expr ']';
+prefixOperator: '++' | '--' | Pointers;
+
+assignmentOperator//no XOR
+:	'=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '&=' | '|='
+;
+//-------------------------------expression related-------------------------
+
+//------------------------------statements--------------------------
+statement: ifStatement | whileStatement | switchStatement | forStatement;
 
 ifStatement//maybe allow () for intuitiveness
 :	'if' statementHelper
@@ -209,7 +223,11 @@ ifStatement//maybe allow () for intuitiveness
 
 whileStatement
 :	'while' statementHelper
-|	'do' (' '+ flat (NewLine scope)?|NewLine scope) (NewLine+|' '+) 'while' ' ' logicExpression
+|	'do' (' '+ flat (NewLine scope)?|NewLine scope) (NewLine+|' '+) 'while' ' ' logicExpr
+;
+
+forStatement
+:	'for' ' '+ initialize
 ;
 
 switchStatement
@@ -226,26 +244,27 @@ switchScope
 cases: closedExpr ( ' '+ closedExpr)*;
 
 statementHelper
-:	' '+ logicExpression NewLine scope
-|	' '* '(' Spaces logicExpression Spaces ')' ' '* body
+:	' '+ logicExpr NewLine scope
+|	' '* '(' Spaces logicExpr Spaces ')' ' '* body
 ;
+//------------------------------statements--------------------------
 
-logicExpression : Logic|'=';
+logicExpr : Logic| Seperator;
 
 
 Logic
-:	'||' | '&&' | '!=' | '<'
-|	'>' | '<=' | '>='
+:	'&' | '~?' | '?~' | '<'  | '?'
+|	'>' | '<?' | '?<' | '>?' | '?>'
 ;
 
 declarationSpecifiers: declarationSpecifier (' ' declarationSpecifier)*;
 
 declarationSpecifier
-:	StorageClassSpecifier
-|	TypeQualifier
+:	storageClassSpecifier
+|	typeQualifier
 ;
 
-StorageClassSpecifier
+storageClassSpecifier
 :	'typedef'
 |	'extern'
 |	'static'
@@ -254,7 +273,7 @@ StorageClassSpecifier
 |	'register'
 ;
 
-TypeQualifier
+typeQualifier
 :	'const'
 |	'restrict'
 |	'volatile'
@@ -275,7 +294,7 @@ Number       : Digit (Digit|NonDigit)*;
 
 Equal        : '=';
 Spaces       : ' '+;
-Pointers     : '*' | '^' | '&';
+Pointers     : '`' | '^' | '@';
 type         : ID Pointers*;
 name         : ID;
 ID           : NonDigit (Digit|NonDigit)*;
@@ -285,7 +304,7 @@ LeftParen    : '(';
 RightParen   : ')';
 LeftBrace    : '{';
 RightBrace   : '}';
-Thing        : '|';
+Seperator    : '|';
 
 TABS
 :	'\t'+

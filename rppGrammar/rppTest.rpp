@@ -16,10 +16,21 @@ class name
 			float| a b c
 			int| a {b 3}
 
-		if =
+		if |
 			float| a = fun callMe
-		elif !=
+		elif ~?
 			switch fun yes
 				case 1 2 3
 					print no
 				case 5: print yes
+		else
+			const
+				int|a
+				static
+					float|b = 3
+					gloat|a c d = 4
+			a = 3
+
+			sajhsad[0] = 4
+
+
