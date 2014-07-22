@@ -1,15 +1,18 @@
 class name
+
 	int|f g h
 
 	static
 		float{b 3} g
 		int|s m {n o = fun (fun2 3)}
 
-	main
+	int main
 		const
-			int pain = 3
+			int
+				pain = 3
 				chain
-			float kain = 4
+			float
+				kain = 4
 				{chain sain 6} lain
 	=
 		const
@@ -29,8 +32,5 @@ class name
 				static
 					float|b = 3
 					gloat|a c d = 4
-			a = 3
-
-			sajhsad[0] = 4
 
 

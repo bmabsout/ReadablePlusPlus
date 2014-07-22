@@ -179,6 +179,82 @@ initialize
 	|	' '* closedItem (' '+ linemix)? (NewLine initializeScope)?
 	)
 ;
+//_______________testing______________
+
+
+lineScope
+:	declarationSpecifiers
+	(
+    	' '+ '(' ' '* lineScope ' '* ')'
+    |	' '+ linemix
+    |	' '* '|' ' '* lineScope
+    )+
+|	typeSpecifiers
+	(
+    	' '+ '(' ' '* lineTypeScope ' '* ')'
+    |	' '+ linemix
+    |	' '* '|' ' '* lineScope
+    )+
+;
+
+lineTypeScope
+:	declarationSpecifiers
+	(
+		' '+ '(' ' '* lineTypeScope ' '* ')'
+	|	' '+ linemix
+	|	' '* '|' ' '* lineTypeScope
+	)+
+;
+
+initializeScope2
+:	INDENT (initialize2 NewLine+)+ DEDENT
+;
+
+typeScope2
+:	INDENT (typeInitialize NewLine+)+ DEDENT
+;
+
+initialize2
+:	declarationSpecifiers
+	(
+		NewLine initializeScope2
+	|
+		(
+			' '+ '(' ' '* lineScope ' '* ')'
+		|	' '* '|' ' '* lineScope
+		)+ (NewLine initializeScope2)?
+	)
+|	typeSpecifiers
+	(
+	 	NewLine typeScope2
+	|
+		(
+	   		' '+ '(' ' '* lineTypeScope ' '* ')'
+	   	|	' '+ linemix
+	   	|	' '* '|' ' '* lineScope
+	   	)+ (NewLine typeScope2)?
+	)
+;
+
+typeInitialize
+:	declarationSpecifiers
+	(
+	 	NewLine typeScope2
+	|
+		(
+	   		' '+ '(' ' '* lineTypeScope ' '* ')'
+	   	|	' '+ linemix
+	   	|	' '* '|' ' '* lineScope
+	   	)+ (NewLine typeScope2)?
+	)
+;
+
+typeSpecifiers
+:	declarationSpecifier (' '+ declarationSpecifier)* ' '+ type
+|	type (' '+ declarationSpecifier)*
+;
+
+//_______________testing______________
 
 declarator: name (' ' name)*;
 decleratorScope: INDENT (declarator NewLine+)+ DEDENT;
@@ -194,23 +270,24 @@ lineAssign: declarator (' '* '=' ' '* (expr|functionArgs|'('functionNoArgs')'));
 
 linemix: (closedItem|declarator) (' '+ (closedItem|declarator))*;
 //-------------------------------expression related-------------------------
-closedExpr : Number | name | '('functionCall')';
-expr       : Number | name | functionCall;
+closedExpr : Number | name | '('functionCall')'| unaryExpr;
+expr       : Number | name | functionCall | unaryExpr;
 assignment : unaryExprs ' '* assignmentOperator ' '* expr;
 
 unaryExprs: unaryExpr (' '+ unaryExpr)*;
 
 unaryExpr
-:	prefixOperator? name postfixOperator?
+:	prefixOperator name
+|	name postfixOperator
 ;
 
 postfixOperator: '++' | '--' | '[' expr ']';
-prefixOperator: '++' | '--' | Pointers;
+prefixOperator: '++' | '--' | Pointer;
 
 assignmentOperator//no XOR
 :	'=' | '*=' | '/=' | '%=' | '+=' | '-=' | '<<=' | '>>=' | '&=' | '|='
 ;
-//-------------------------------expression related-------------------------
+//_______________________________expression related_________________________
 
 //------------------------------statements--------------------------
 statement: ifStatement | whileStatement | switchStatement | forStatement;
@@ -249,12 +326,13 @@ statementHelper
 ;
 //------------------------------statements--------------------------
 
-logicExpr : Logic| Seperator;
+logicExpr : Logic| Seperator ;
 
 
 Logic
-:	'&' | '~?' | '?~' | '<'  | '?'
+:	'&' | '~?' | '|?' | '<'  | '?'
 |	'>' | '<?' | '?<' | '>?' | '?>'
+|	'?|'
 ;
 
 declarationSpecifiers: declarationSpecifier (' ' declarationSpecifier)*;
@@ -294,8 +372,8 @@ Number       : Digit (Digit|NonDigit)*;
 
 Equal        : '=';
 Spaces       : ' '+;
-Pointers     : '`' | '^' | '@';
-type         : ID Pointers*;
+Pointer      : '`' | '^' | '@';
+type         : ID Pointer*;
 name         : ID;
 ID           : NonDigit (Digit|NonDigit)*;
 Digit        : [0-9];
