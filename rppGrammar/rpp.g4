@@ -77,7 +77,7 @@ member
 |	(memberSpecifiers ' '+)? type
 		' '* '|'
 		(
-			' '* declarator (NewLine decleratorScope)?
+			' '* declarators (NewLine decleratorScope)?
 		|	NewLine decleratorScope
 		)
 |	staticMemberSpecifiers NewLine typeScope
@@ -154,7 +154,7 @@ scope
 :	INDENT body NewLine+ DEDENT
 ;
 
-line: statement | initialize | assignment | functionCall | expr;
+line: statement | '|'initialize2 | assignment | functionCall | expr;
 //-------------------line-------------
 
 
@@ -162,10 +162,10 @@ typeScope: INDENT (initialize NewLine+)+ DEDENT;
 
 functionCall: name (' ' closedExpr)*;
 functionArgs: name (' ' closedExpr)+;
-functionNoArgs: name;
+functionNoArgs: '(' ' '* name ' '* ')';
 
 initializeScope: INDENT ((assignLine|linemix) NewLine+)+ DEDENT;
-assignLine: lineAssign | declarator (' '+ linemix)?;
+assignLine: lineAssign | declarators (' '+ linemix)?;
 
 initialize
 :	declarationSpecifiers NewLine typeScope
@@ -185,22 +185,23 @@ initialize
 lineScope
 :	declarationSpecifiers
 	(
-    	' '+ '(' ' '* lineScope ' '* ')'
-    |	' '+ linemix
-    |	' '* '|' ' '* lineScope
-    )+
+		' '+ '(' ' '* lineScope ' '* ')'
+	|	' '* '|' ' '* lineScope
+	)+
 |	typeSpecifiers
 	(
-    	' '+ '(' ' '* lineTypeScope ' '* ')'
-    |	' '+ linemix
-    |	' '* '|' ' '* lineScope
-    )+
+		' '+ '(' ' '* lineTypeScope ' '* ')'
+	|	' '+ lineAssign
+	|	' '+ linemix
+	|	' '* '|' ' '* lineScope
+	)+
 ;
 
 lineTypeScope
 :	declarationSpecifiers
 	(
 		' '+ '(' ' '* lineTypeScope ' '* ')'
+	|	' '+ lineAssign
 	|	' '+ linemix
 	|	' '* '|' ' '* lineTypeScope
 	)+
@@ -226,26 +227,28 @@ initialize2
 	)
 |	typeSpecifiers
 	(
-	 	NewLine typeScope2
+		NewLine typeScope2
 	|
 		(
-	   		' '+ '(' ' '* lineTypeScope ' '* ')'
-	   	|	' '+ linemix
-	   	|	' '* '|' ' '* lineScope
-	   	)+ (NewLine typeScope2)?
+			' '+ '(' ' '* lineTypeScope ' '* ')'
+		|	' '+ lineAssign
+		|	' '+ linemix
+		|	' '* '|' ' '* lineScope
+		)+ (NewLine typeScope2)?
 	)
 ;
 
 typeInitialize
 :	declarationSpecifiers
 	(
-	 	NewLine typeScope2
+		NewLine typeScope2
 	|
 		(
-	   		' '+ '(' ' '* lineTypeScope ' '* ')'
-	   	|	' '+ linemix
-	   	|	' '* '|' ' '* lineScope
-	   	)+ (NewLine typeScope2)?
+			' '+ '(' ' '* lineTypeScope ' '* ')'
+		|	' '+ lineAssign
+		|	' '+ linemix
+		|	' '* '|' ' '* lineScope
+		)+ (NewLine typeScope2)?
 	)
 ;
 
@@ -256,19 +259,19 @@ typeSpecifiers
 
 //_______________testing______________
 
-declarator: name (' ' name)*;
-decleratorScope: INDENT (declarator NewLine+)+ DEDENT;
+declarators: name (' ' name)*;
+decleratorScope: INDENT (declarators NewLine+)+ DEDENT;
 
-closedItem: '{' ' '* declarator ' '+
+closedItem: '{' ' '* declarators ' '+
 	(
 		closedExpr
 	|	'=' ' '+ expr
 	) ' '* '}'
 ;
 
-lineAssign: declarator (' '* '=' ' '* (expr|functionArgs|'('functionNoArgs')'));
+lineAssign: declarators ( ' '* '=' ' '* (expr|functionArgs|functionNoArgs) );
 
-linemix: (closedItem|declarator) (' '+ (closedItem|declarator))*;
+linemix: (closedItem|declarators) (' '+ (closedItem|declarators))*;
 //-------------------------------expression related-------------------------
 closedExpr : Number | name | '('functionCall')'| unaryExpr;
 expr       : Number | name | functionCall | unaryExpr;
