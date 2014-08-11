@@ -10,7 +10,7 @@ c++ is not a readable language. This is an effort to just make it more pleasing 
 ```python
 class Sample
 public
-	static int*|a b c d = NULL
+	|static int* a b c d = NULL
 
 	Sample()
 		Sample 1 2 3
@@ -29,29 +29,29 @@ public
 			case 6
 				print "it is 6"
 
-		int[]|deal nodeal = 1 2 3 4 5
+		|[]int deal nodeal = 1 2 3 4 5
 		int{length 5} {size 6} width
 
-		float|
+		|float
 			radius = 5.3
 			x = 6.6
 			y = 7.7
 
-		int|sum
-			deal |> multiplyBy 4 |> sum |> add1
+		|int sum
+		=	deal |> multiplyBy 4 |> sum |> add1
 
-		int|change
-			if yes - sum > 36
-				24
-			elif sum*sum < 4
-				34
-			elif sum*sum > 5
-				33
-			else
-				23
+			change
+			=	if yes - sum > 36
+					24
+				elif sum*sum < 4
+					34
+				elif sum*sum > 5
+					33
+				else
+					23
 
-		for(i in 0..length)
-			deal[i] = change
+		for i 0..length
+			deal:i = change
 ```
 
 ##Turns into this hpp file:

@@ -1,10 +1,10 @@
 class name
 
-	int|f g h
+	|int f g h
 
-	static
-		float{b 3} g
-		int|s m {n o = fun (fun2 3)}
+	|static
+		float {b 3} g
+		int s m {n o = fun [fun2 3]}
 
 	int main
 		const
@@ -19,9 +19,9 @@ class name
 			float a b c
 			int a {b 3}
 
-		if |
+		if a|b
 			|float a = fun callMe
-		elif ~?
+		elif a~?b
 			switch fun yes
 				case 1 2 3
 					print no
@@ -32,5 +32,8 @@ class name
 				static
 					float b = 3
 					gloat a c d = 4
+
+		for 0..10
+			printfn yes
 
 

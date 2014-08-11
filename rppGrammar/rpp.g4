@@ -73,15 +73,7 @@ destructor : '~' name functionDefinition;
 memberScope: INDENT (member NewLine)+ DEDENT;
 
 member
-:	memberSpecifiers NewLine memberScope
-|	(memberSpecifiers ' '+)? type
-		' '* '|'
-		(
-			' '* declarators (NewLine decleratorScope)?
-		|	NewLine decleratorScope
-		)
-|	staticMemberSpecifiers NewLine typeScope
-|	staticMemberSpecifiers ' '+ initialize
+:	' '* '|' ' '* initialize
 ;
 
 staticMemberSpecifiers: (memberSpecifier ' '+)* 'static' (' '+ memberSpecifier)*;
@@ -101,30 +93,12 @@ function
 :	functionSpecifiers? type ' ' name functionDefinition
 ;
 
-argLine
-:	(declarationSpecifiers ' '+)? type
-	(
-		(
-			' '+ assignLine
-		|	' '* closedItem (' '+ linemix)?
-		)
-		(NewLine initializeScope)?
-	|	NewLine initializeScope
-	)
-|	declarationSpecifiers NewLine argScope
-;
-
-argFlatLine
-:	(declarationSpecifiers ' '+)? type (' '+ linemix| closedItem (' '+ linemix)?)
-		(' '* '|' ' '* (declarationSpecifiers ' '+)? type ' '+ linemix)*
-;
-
 argScope
-:	INDENT ((argLine|argFlatLine) NewLine+)+ DEDENT
+:	INDENT (initialize NewLine+)+ DEDENT
 ;
 
 functionDefinition
-:	(' '+ argFlatLine)?
+:	(' '+ lineScope)?
 	(
 		(
 			NewLine scope
@@ -138,6 +112,7 @@ functionDefinition
 		)
 	)
 ;
+
 //----------------function declaration rules------------------------
 
 equals: '='+;
@@ -154,43 +129,22 @@ scope
 :	INDENT body NewLine+ DEDENT
 ;
 
-line: statement | '|'initialize2 | assignment | functionCall | expr;
+line: statement | ' '* '|' ' '* initialize | assignment | expr;
 //-------------------line-------------
 
+openFunction: name (' ' closedExpr)+ | LeftBracket name RightBracket;
+closedFunction: LeftBracket name (' ' closedExpr)* RightBracket;
 
-typeScope: INDENT (initialize NewLine+)+ DEDENT;
-
-functionCall: name (' ' closedExpr)*;
-functionArgs: name (' ' closedExpr)+;
-functionNoArgs: '(' ' '* name ' '* ')';
-
-initializeScope: INDENT ((assignLine|linemix) NewLine+)+ DEDENT;
-assignLine: lineAssign | declarators (' '+ linemix)?;
-
-initialize
-:	declarationSpecifiers NewLine typeScope
-|	(declarationSpecifiers ' '+)? type
-	(
-		' '* '|'
-		(
-			' '* assignLine (NewLine initializeScope)?
-		|	NewLine initializeScope
-		)
-	|	' '* closedItem (' '+ linemix)? (NewLine initializeScope)?
-	)
-;
-//_______________testing______________
-
-
+//_______________declarationUnits______________
 lineScope
 :	declarationSpecifiers
 	(
-		' '+ '(' ' '* lineScope ' '* ')'
+		' '+ LeftParen lineScope RightParen
 	|	' '* '|' ' '* lineScope
 	)+
 |	typeSpecifiers
 	(
-		' '+ '(' ' '* lineTypeScope ' '* ')'
+		' '+ LeftParen lineTypeScope RightParen
 	|	' '+ lineAssign
 	|	' '+ linemix
 	|	' '* '|' ' '* lineScope
@@ -200,56 +154,57 @@ lineScope
 lineTypeScope
 :	declarationSpecifiers
 	(
-		' '+ '(' ' '* lineTypeScope ' '* ')'
+		' '+ LeftParen lineTypeScope RightParen
 	|	' '+ lineAssign
 	|	' '+ linemix
 	|	' '* '|' ' '* lineTypeScope
 	)+
 ;
 
-initializeScope2
-:	INDENT (initialize2 NewLine+)+ DEDENT
+initializeScope
+:	INDENT (initialize NewLine+)+ DEDENT
 ;
 
-typeScope2
+typeScope
 :	INDENT (typeInitialize NewLine+)+ DEDENT
 ;
 
-initialize2
+initialize
 :	declarationSpecifiers
 	(
-		NewLine initializeScope2
+		NewLine initializeScope
 	|
 		(
-			' '+ '(' ' '* lineScope ' '* ')'
+			' '+ LeftParen lineScope RightParen
 		|	' '* '|' ' '* lineScope
-		)+ (NewLine initializeScope2)?
+		)+ (NewLine initializeScope)?
 	)
 |	typeSpecifiers
 	(
-		NewLine typeScope2
+		NewLine typeScope
 	|
 		(
-			' '+ '(' ' '* lineTypeScope ' '* ')'
+			' '+ LeftParen lineTypeScope RightParen
 		|	' '+ lineAssign
 		|	' '+ linemix
 		|	' '* '|' ' '* lineScope
-		)+ (NewLine typeScope2)?
+		)+ (NewLine typeScope)?
 	)
 ;
 
 typeInitialize
 :	declarationSpecifiers
 	(
-		NewLine typeScope2
+		NewLine typeScope
 	|
 		(
-			' '+ '(' ' '* lineTypeScope ' '* ')'
+			' '+ LeftParen lineTypeScope RightParen
 		|	' '+ lineAssign
 		|	' '+ linemix
 		|	' '* '|' ' '* lineScope
-		)+ (NewLine typeScope2)?
+		)+ (NewLine typeScope)?
 	)
+|	lineAssign | linemix
 ;
 
 typeSpecifiers
@@ -257,24 +212,23 @@ typeSpecifiers
 |	type (' '+ declarationSpecifier)*
 ;
 
-//_______________testing______________
-
 declarators: name (' ' name)*;
 decleratorScope: INDENT (declarators NewLine+)+ DEDENT;
 
-closedItem: '{' ' '* declarators ' '+
+closedItem: LeftBrace declarators ' '+
 	(
 		closedExpr
 	|	'=' ' '+ expr
-	) ' '* '}'
+	) RightBrace
 ;
 
-lineAssign: declarators ( ' '* '=' ' '* (expr|functionArgs|functionNoArgs) );
+lineAssign: declarators ( ' '* '=' ' '* expr );
 
 linemix: (closedItem|declarators) (' '+ (closedItem|declarators))*;
+//_______________declarationUnits______________
 //-------------------------------expression related-------------------------
-closedExpr : Number | name | '('functionCall')'| unaryExpr;
-expr       : Number | name | functionCall | unaryExpr;
+closedExpr : Number | name | closedFunction| unaryExpr;
+expr       : Number | name | openFunction | unaryExpr;
 assignment : unaryExprs ' '* assignmentOperator ' '* expr;
 
 unaryExprs: unaryExpr (' '+ unaryExpr)*;
@@ -284,7 +238,7 @@ unaryExpr
 |	name postfixOperator
 ;
 
-postfixOperator: '++' | '--' | '[' expr ']';
+postfixOperator: '++' | '--' | ('@' closedExpr)+;
 prefixOperator: '++' | '--' | Pointer;
 
 assignmentOperator//no XOR
@@ -307,7 +261,11 @@ whileStatement
 ;
 
 forStatement
-:	'for' ' '+ initialize
+:	'for' ' '+
+	(
+		range
+	|	(typeSpecifiers ' '+)? name ' '+ range
+	) (Colon flat (NewLine scope)?|NewLine scope)
 ;
 
 switchStatement
@@ -315,27 +273,49 @@ switchStatement
 ;
 
 caseScope
-:	'case' ' '+ cases (NewLine scope|' '* ':' ' '* line (NewLine scope)?)
+:	'case' ' '+ cases (NewLine scope|Colon line (NewLine scope)?)
 ;
 
 switchScope
 :	INDENT (caseScope NewLine+)+ DEDENT;
 
-cases: closedExpr ( ' '+ closedExpr)*;
+cases: (range|closedExpr) ( ' '+ (closedExpr|range))*;
 
 statementHelper
 :	' '+ logicExpr NewLine scope
-|	' '* '(' Spaces logicExpr Spaces ')' ' '* body
+|	' '* LeftParen logicExpr Spaces RightParen ' '* body
 ;
 //------------------------------statements--------------------------
 
-logicExpr : Logic| Seperator ;
+logicExpr : logic ;
 
+arithmetic
+:	arithmetic (Star|Over) arithmetic
+|	arithmetic (Plus|Minus) arithmetic
+|	LeftParen arithmetic RightParen
+|	name
+;
+Star  : ' '* '*' ' '*;
+Over  : ' '* '/' ' '*;
+Plus  : ' '* '+' ' '*;
+Minus : ' '* '-' ' '*;
 
-Logic
-:	'&' | '~?' | '|?' | '<'  | '?'
-|	'>' | '<?' | '?<' | '>?' | '?>'
-|	'?|'
+logic
+:	logic (' '+ logic)* ' '* Seperator ' '* logic (' '+ logic)*
+|	logic (' '+ logic)* And logic (' '+ logic)*
+|	logic (' '+ logic)* Comparison logic (' '+ logic)*
+|	LeftParen logic RightParen
+|	arithmetic
+;
+And: ' '* '&' ' '*;
+Comparison
+:	' '*
+	(
+		'~?' | '<'  | '?' | '>'
+	|	'<?'| '?<' | '>?' | '?>'
+	|	'?|'| '|?'
+	)
+	' '*
 ;
 
 declarationSpecifiers: declarationSpecifier (' ' declarationSpecifier)*;
@@ -368,7 +348,7 @@ functionSpecifier
 |	'_Noreturn'
 |	'__inline__' // GCC extension
 |	'__stdcall')
-|	'__declspec' '(' ID ')'
+|	'__declspec' LeftParen ID RightParen
 ;
 
 Number       : Digit (Digit|NonDigit)*;
@@ -378,14 +358,18 @@ Spaces       : ' '+;
 Pointer      : '`' | '^' | '@';
 type         : ID Pointer*;
 name         : ID;
+range        : closedExpr '..' closedExpr;
 ID           : NonDigit (Digit|NonDigit)*;
 Digit        : [0-9];
 NonDigit     : [a-zA-Z_];
-LeftParen    : '(';
-RightParen   : ')';
-LeftBrace    : '{';
-RightBrace   : '}';
+LeftParen    : '(' ' '*;
+RightParen   : ' '* ')';
+LeftBrace    : '{' ' '*;
+RightBrace   : ' '* '}';
+LeftBracket  : '[' ' '*;
+RightBracket : ' '* ']';
 Seperator    : '|';
+Colon        : ' '* ':' ' '*;
 
 TABS
 :	'\t'+
