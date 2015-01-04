@@ -3,6 +3,16 @@ import org.antlr.v4.runtime.misc.Interval;
 
 public class rppWalk extends rppBaseVisitor<String>
 {
+	int tabCount = 0;
+
+	public String tabs()
+	{
+		String ans = "";
+		for (int i = 0; i < tabCount; i++)
+			ans += "\t";
+		return ans;
+	}
+
 	@Override
 	public String visitCompilationUnit(rppParser.CompilationUnitContext ctx)
 	{
@@ -22,12 +32,13 @@ public class rppWalk extends rppBaseVisitor<String>
 	@Override
 	public String visitClassScope(rppParser.ClassScopeContext ctx)
 	{
+		tabCount++;
 		String ans = "";
 		for(rppParser.GlobalContext gtx : ctx.global())
 		{
 			if(gtx.function() != null)
-				ans += "\tfunction here\n";
-			else ans += "\t"+visit(gtx.member())+"\n";
+				ans += tabs()+visit(gtx.function())+"\n";
+			else ans += tabs()+visit(gtx.member())+"\n";
 		}
 		//remember to add the new lines
 		for(rppParser.ConstructorContext con : ctx.constructor())
@@ -35,6 +46,7 @@ public class rppWalk extends rppBaseVisitor<String>
 
 		for(rppParser.DestructorContext dtx : ctx.destructor())
 			ans += "\tdestructor\n";
+		tabCount--;
 		return ans;
 	}
 
@@ -59,4 +71,50 @@ public class rppWalk extends rppBaseVisitor<String>
 	{
 		return ctx.type().getText();
 	}
+
+	@Override
+	public String visitFunction(rppParser.FunctionContext ctx)
+	{
+		String ans = "";
+		if(ctx.functionSpecifiers() != null)
+			ans += ctx.functionSpecifiers().getText() + " ";
+		ans += ctx.type().getText()+ " " + ctx.name().getText();
+		return ans + visit(ctx.functionDefinition());
+	}
+
+	@Override
+	public String visitFunctionDefinition(rppParser.FunctionDefinitionContext ctx)
+	{
+		String ans = "";
+		ans += "(";
+		if(ctx.lineScope() != null)
+			ans += visit(ctx.lineScope());
+		else
+			ans += visit(ctx.argScope());
+		ans += ")\n"+tabs()+"{\n";
+
+		ans += visit(ctx.scope());
+		ans += "\n"+tabs()+"}";
+		return ans;
+	}
+
+	@Override
+	public String visitArgScope(rppParser.ArgScopeContext ctx)
+	{
+		String ans = "";
+		for (rppParser.InitializeContext itx : ctx.initialize())
+			ans += "initialize, ";
+		return ans;
+	}
+
+	@Override
+	public String visitScope(rppParser.ScopeContext ctx)
+	{
+		tabCount++;
+		String ans = "";
+		ans += tabs() + "bodey\n";
+		tabCount--;
+		return ans;
+	}
+
 }

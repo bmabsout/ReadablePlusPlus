@@ -331,7 +331,7 @@ storageClassSpecifier
 |	'static'
 |	'_Thread_local'
 |	'auto'
-|	'register'
+|	'registe'
 ;
 
 typeQualifier

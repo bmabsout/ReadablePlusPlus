@@ -22,5 +22,4 @@
 *.app
 
 # for now java files and tokens
-rppGrammar/*.java
 rppGrammar/*.tokens
