@@ -6,9 +6,9 @@ class name
 		float {b 3} g
 		int s m {n o = fun [fun2 3]}
 
-	|const int l
+	|const (int l | float n)
 
-	float pain static (const int yes | float no) = print yes
+	float pain static (const int yes | float no) = |int hohoho;a=3
 
 	int main
 		const

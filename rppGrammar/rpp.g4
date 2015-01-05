@@ -70,8 +70,6 @@ constructor : name functionDefinition;
 destructor : '~' name functionDefinition;
 
 //----------------class related-------------------------------------
-memberScope: INDENT (member NewLine)+ DEDENT;
-
 member
 :	' '* '|' ' '* initialize
 ;
@@ -223,9 +221,9 @@ lineAssign: declarators ( ' '* '=' ' '* expr );
 linemix: (closedItem|declarators) (' '+ (closedItem|declarators))*;
 //_______________declarationUnits______________
 //-------------------------------expression related-------------------------
-closedExpr : Number | name | closedFunction| unaryExpr;
-expr       : Number | name | openFunction | unaryExpr;
-assignment : unaryExprs ' '* assignmentOperator ' '* expr;
+closedExpr : number | name | closedFunction| unaryExpr;
+expr       : number | name | openFunction | unaryExpr;
+assignment : declarators ' '* assignmentOperator ' '* expr;
 
 unaryExprs: unaryExpr (' '+ unaryExpr)*;
 
@@ -347,6 +345,7 @@ functionSpecifier
 |	'__declspec' LeftParen ID RightParen
 ;
 
+number       : Number;
 Number       : Digit (Digit|NonDigit)*;
 
 Equal        : '=';

@@ -43,7 +43,7 @@ public class rppWalk extends rppBaseVisitor<String>
 	@Override
 	public String visitClassGlobals(rppParser.ClassGlobalsContext ctx)
 	{
-		String ans = "class " + ctx.name().getText() + "\n{\n";
+		String ans = "class " + visit(ctx.name()) + "\n{\n";
 		ans += visit(ctx.classScope()) + "\n}";
 		return ans;
 	}
@@ -63,21 +63,9 @@ public class rppWalk extends rppBaseVisitor<String>
 					ans += "\n";
 			}
 			else
-				ans += tabs() + visit(ctx.getChild(i));
+				ans += visit(ctx.getChild(i));
 		}
 
-		// for(rppParser.GlobalContext gtx : ctx.global())
-		// {
-		// 	if(gtx.function() != null)
-		// 		ans += tabs()+visit(gtx.function())+"\n";
-		// 	else ans += tabs()+visit(gtx.member())+"\n";
-		// }
-		// //remember to add the new lines
-		// for(rppParser.ConstructorContext con : ctx.constructor())
-		// 	ans += "\tconstructor\n";
-
-		// for(rppParser.DestructorContext dtx : ctx.destructor())
-		// 	ans += "\tdestructor\n";
 		tabCount--;
 		return ans;
 	}
@@ -99,16 +87,16 @@ public class rppWalk extends rppBaseVisitor<String>
 			typeLevel.push(ctx.declarationSpecifiers().getText());
 
 		int numChildren = ctx.getChildCount();
-		boolean firstTime = true;
+		boolean first = true;
 		for (int i = 1; i < numChildren; i++)
 		{
 			if (!(ctx.getChild(i) instanceof TerminalNode))
 			{
-				if(!firstTime)
+				if(!first && inArgs)
 					ans += ", ";
 
 				ans += visit(ctx.getChild(i));
-				firstTime = false;
+				first = false;
 			}
 		}
 
@@ -142,21 +130,19 @@ public class rppWalk extends rppBaseVisitor<String>
 		typeLevel.push(ctx.declarationSpecifiers().getText());
 
 		int numChildren = ctx.getChildCount();
-		boolean firstTime = true;
+		boolean first = true;
 		for (int i = 1; i < numChildren; i++)
 		{
 			if (!(ctx.getChild(i) instanceof TerminalNode))
 			{
-				if(!firstTime)
+				if(!first)
 				{
 					if(inArgs)
 						ans += ", ";
-					else
-						ans += ";\n";
 				}
 
 				ans += visit(ctx.getChild(i));
-				firstTime = false;
+				first = false;
 			}
 		}
 
@@ -173,10 +159,10 @@ public class rppWalk extends rppBaseVisitor<String>
 	@Override
 	public String visitFunction(rppParser.FunctionContext ctx)
 	{
-		String ans = "";
+		String ans = tabs();
 		if(ctx.functionSpecifiers() != null)
 			ans += ctx.functionSpecifiers().getText() + " ";
-		ans += ctx.type().getText()+ " " + ctx.name().getText();
+		ans += ctx.type().getText()+ " " + visit(ctx.name());
 		return ans + visit(ctx.functionDefinition());
 	}
 
@@ -199,9 +185,10 @@ public class rppWalk extends rppBaseVisitor<String>
 			j++;
 		}
         ans += ")\n"+tabs()+"{\n";
+		tabCount++;
 		inArgs = false;
 		int numChildren = ctx.getChildCount();
-		boolean firstTime = true;
+		boolean first = true;
 		int i = 0;
 		while ( i < numChildren)
 		{
@@ -214,7 +201,7 @@ public class rppWalk extends rppBaseVisitor<String>
 			}
 			i++;
 		}
-
+		tabCount--;
 		ans += "\n"+tabs()+"}";
 		return ans;
 	}
@@ -230,17 +217,16 @@ public class rppWalk extends rppBaseVisitor<String>
 			typeLevel.push(ctx.declarationSpecifiers().getText());
 
 		int numChildren = ctx.getChildCount();
-		boolean firstTime = true;
+		boolean first = true;
 		boolean popped = false;
 		for (int i = 1; i < numChildren; i++)
 		{
 			if (!(ctx.getChild(i) instanceof TerminalNode))
 			{
-				if(!firstTime)
+				if(!first && inArgs)
 					ans += ", ";
-
 				ans += visit(ctx.getChild(i));
-				firstTime = false;
+				first = false;
 			}
 			else if(ctx.getChild(i).getText().equals("|"))
 			{
@@ -263,8 +249,6 @@ public class rppWalk extends rppBaseVisitor<String>
 		boolean first = true;
 		for (rppParser.InitializeContext itx : ctx.initialize())
 		{
-			if(!first && inArgs)
-				ans += ", ";
 			ans += visit(itx);
 			first = false;
 		}
@@ -274,28 +258,25 @@ public class rppWalk extends rppBaseVisitor<String>
 	@Override
 	public String visitScope(rppParser.ScopeContext ctx)
 	{
-		tabCount++;
-		String ans = "";
-		ans += tabs() + "bodey\n";
-		tabCount--;
-		return ans;
+		return visit(ctx.body());
 	}
 
 	@Override
 	public String visitLinemix(rppParser.LinemixContext ctx)
 	{
 		int numChildren = ctx.getChildCount();
-		boolean firstTime = true;
+		boolean first = true;
 		String ans = "";
 		for (int i = 0; i < numChildren; i++)
 		{
 			if (!(ctx.getChild(i) instanceof TerminalNode))
 			{
-				if(!firstTime && inArgs)
+				if(!first && inArgs)
 					ans += ", ";
 
 				ans += visit(ctx.getChild(i));
-				firstTime = false;
+
+				first = false;
 			}
 		}
 
@@ -306,16 +287,15 @@ public class rppWalk extends rppBaseVisitor<String>
 	public String visitLineAssign(rppParser.LineAssignContext ctx)
 	{
 		String ans = "";
-		String expr = ctx.expr().getText();
+		String expr = visit(ctx.expr());
 		boolean first = true;
 		for(rppParser.NameContext ntx : ctx.declarators().name())
 		{
-
-			if (!first && inArgs)
-				ans += ", ";
+			if(!inArgs)
+				ans += tabs();
 			ans += types() + " " + ntx.getText() +" = "+ expr;
 			if(!inArgs)
-				ans += ";\n"+tabs();
+				ans += ";\n";
 
 			first = false;
 		}
@@ -331,9 +311,14 @@ public class rppWalk extends rppBaseVisitor<String>
 		{
 			if (!first && inArgs)
 				ans += ", ";
-			ans += types() +" "+ ntx.getText();
+
 			if(!inArgs)
-				ans += ";\n"+tabs();
+				ans += tabs();
+
+			ans += types() +" "+ ntx.getText();
+
+			if(!inArgs)
+				ans += ";\n";
 
 			first = false;
 		}
@@ -346,22 +331,153 @@ public class rppWalk extends rppBaseVisitor<String>
 		String ans = "";
 		String expr = "";
 		if(ctx.expr() != null)
-			expr = ctx.expr().getText();
+			expr = visit(ctx.expr());
 		else
-			expr = ctx.closedExpr().getText();
+			expr = visit(ctx.closedExpr());
 		boolean first = true;
 		for(rppParser.NameContext ntx : ctx.declarators().name())
 		{
 
 			if (!first && inArgs)
 				ans += ", ";
+
+			if(!inArgs)
+				ans += tabs();
+
 			ans += types() + " " + ntx.getText() +" = "+ expr;
 			if(!inArgs)
-				ans += ";\n"+tabs();
+				ans += ";\n";
 
 			first = false;
 		}
 		return ans;
+	}
+
+	@Override
+	public String visitExpr(rppParser.ExprContext ctx)
+	{
+		return visit(ctx.getChild(0));
+	}
+
+	@Override
+	public String visitClosedExpr(rppParser.ClosedExprContext ctx)
+	{
+		return visit(ctx.getChild(0));
+	}
+
+	@Override
+	public String visitOpenFunction(rppParser.OpenFunctionContext ctx)
+	{
+		String ans = visit(ctx.name())+"(";
+		boolean first = true;
+		for(rppParser.ClosedExprContext etx : ctx.closedExpr())
+		{
+			if (!first)
+				ans += ", ";
+			ans += visit(etx);
+			first = false;
+		}
+		ans += ")";
+		return ans;
+	}
+
+	@Override
+	public String visitClosedFunction(rppParser.ClosedFunctionContext ctx)
+	{
+		String ans = visit(ctx.name())+"(";
+		boolean first = true;
+		for(rppParser.ClosedExprContext etx : ctx.closedExpr())
+		{
+			if (!first)
+				ans += ", ";
+			ans += visit(etx);
+			first = false;
+		}
+		ans += ")";
+		return ans;
+	}
+
+	@Override
+	public String visitName(rppParser.NameContext ctx)
+	{
+		return ctx.getText();
+	}
+
+	@Override
+	public String visitType(rppParser.TypeContext ctx)
+	{
+		return ctx.getText();
+	}
+
+	@Override
+	public String visitUnaryExpr(rppParser.UnaryExprContext ctx)
+	{
+		return ctx.getText();
+	}
+
+	@Override
+	public String visitNumber(rppParser.NumberContext ctx)
+	{
+		return ctx.getText();
+	}
+
+	@Override
+	public String visitFlat(rppParser.FlatContext ctx)
+	{
+		String ans = "";
+		for (rppParser.LineContext ltx : ctx.line())
+		{
+			ans += visit(ltx);
+		}
+		return ans;
+	}
+
+	@Override
+	public String visitLine(rppParser.LineContext ctx)
+	{
+		if(ctx.initialize() != null)
+			return visit(ctx.initialize());
+		return visit(ctx.getChild(0));
+	}
+
+	@Override
+	public String visitBody(rppParser.BodyContext ctx)
+	{
+		String ans = "";
+		int numChildren = ctx.getChildCount();
+		for(int i = 0; i < numChildren; i++)
+		{
+			if(ctx.getChild(i) instanceof TerminalNode)
+				ans += "\n";
+			else
+				ans += visit(ctx.getChild(i));
+		}
+		return ans;
+	}
+
+	@Override
+	public String visitAssignment(rppParser.AssignmentContext ctx)
+	{
+		String ans = "";
+		boolean first = true;
+		for (rppParser.NameContext ntx: ctx.declarators().name())
+		{
+			if(!first && inArgs)
+				ans += ", ";
+			if(!inArgs)
+				ans += tabs();
+			ans += ntx.getText() + " " + visit(ctx.assignmentOperator()) + " " + visit(ctx.expr());
+			if(!inArgs)
+				ans += ";\n";
+			first = false;
+		}
+		return ans;
+	}
+
+	@Override
+	public String visitAssignmentOperator(rppParser.AssignmentOperatorContext ctx)
+	{
+		return ctx.getChild(0).getText();
 	}
 
 }
