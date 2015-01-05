@@ -6,18 +6,19 @@ class name
 		float {b 3} g
 		int s m {n o = fun [fun2 3]}
 
-	|const int s
+	|const int l
 
 	float pain static (const int yes | float no) = print yes
 
 	int main
 		const
 			int
-				pain = 3
 				chain
+				pain
 			float
+				lane
 				kain = 4
-				{chain sane 6} lane
+				{chain sane 6}
 	=
 		|const
 			float a b c

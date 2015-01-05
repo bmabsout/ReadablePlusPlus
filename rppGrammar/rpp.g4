@@ -93,10 +93,6 @@ function
 :	functionSpecifiers? type ' ' name functionDefinition
 ;
 
-argScope
-:	INDENT (initialize NewLine+)+ DEDENT
-;
-
 functionDefinition
 :	(' '+ lineScope)?
 	(
@@ -104,7 +100,7 @@ functionDefinition
 			NewLine scope
 		|	' '* '=' ' '* flat (NewLine scope)?
 		)
-	|	NewLine argScope NewLine+ '='
+	|	NewLine initializeScope NewLine+ '='
 		(
 			' '* flat (NewLine scope)?
 		|	equals? NewLine? scope

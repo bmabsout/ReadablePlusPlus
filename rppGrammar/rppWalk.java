@@ -192,10 +192,10 @@ public class rppWalk extends rppBaseVisitor<String>
 			ans += visit(ctx.lineScope());
 			j++;
 		}
-		if(ctx.argScope() != null)
+		if(ctx.initializeScope() != null)
 		{
 			if(j > 0) ans += ", ";
-			ans += visit(ctx.argScope());
+			ans += visit(ctx.initializeScope());
 			j++;
 		}
         ans += ")\n"+tabs()+"{\n";
@@ -256,17 +256,18 @@ public class rppWalk extends rppBaseVisitor<String>
 		return ans;
 	}
 
-
 	@Override
-	public String visitArgScope(rppParser.ArgScopeContext ctx)
+	public String visitInitializeScope(rppParser.InitializeScopeContext ctx)
 	{
-		inArgs = true;
 		String ans = "";
-		if(ctx.initialize().size() > 0)
-			ans += visit(ctx.initialize(0));
-		for (int i = 1 ; i < ctx.initialize().size(); i++)
-			ans += ", " + visit(ctx.initialize(i));
-		inArgs = false;
+		boolean first = true;
+		for (rppParser.InitializeContext itx : ctx.initialize())
+		{
+			if(!first && inArgs)
+				ans += ", ";
+			ans += visit(itx);
+			first = false;
+		}
 		return ans;
 	}
 
@@ -302,6 +303,26 @@ public class rppWalk extends rppBaseVisitor<String>
 	}
 
 	@Override
+	public String visitLineAssign(rppParser.LineAssignContext ctx)
+	{
+		String ans = "";
+		String expr = ctx.expr().getText();
+		boolean first = true;
+		for(rppParser.NameContext ntx : ctx.declarators().name())
+		{
+
+			if (!first && inArgs)
+				ans += ", ";
+			ans += types() + " " + ntx.getText() +" = "+ expr;
+			if(!inArgs)
+				ans += ";\n"+tabs();
+
+			first = false;
+		}
+		return ans;
+	}
+
+	@Override
 	public String visitDeclarators(rppParser.DeclaratorsContext ctx)
 	{
 		String ans = "";
@@ -311,6 +332,30 @@ public class rppWalk extends rppBaseVisitor<String>
 			if (!first && inArgs)
 				ans += ", ";
 			ans += types() +" "+ ntx.getText();
+			if(!inArgs)
+				ans += ";\n"+tabs();
+
+			first = false;
+		}
+		return ans;
+	}
+
+	@Override
+	public String visitClosedItem(rppParser.ClosedItemContext ctx)
+	{
+		String ans = "";
+		String expr = "";
+		if(ctx.expr() != null)
+			expr = ctx.expr().getText();
+		else
+			expr = ctx.closedExpr().getText();
+		boolean first = true;
+		for(rppParser.NameContext ntx : ctx.declarators().name())
+		{
+
+			if (!first && inArgs)
+				ans += ", ";
+			ans += types() + " " + ntx.getText() +" = "+ expr;
 			if(!inArgs)
 				ans += ";\n"+tabs();
 
