@@ -202,7 +202,7 @@ public class rppWalk extends rppBaseVisitor<String>
 			i++;
 		}
 		tabCount--;
-		ans += "\n"+tabs()+"}";
+		ans += tabs()+"}";
 		return ans;
 	}
 
@@ -437,6 +437,8 @@ public class rppWalk extends rppBaseVisitor<String>
 	{
 		if(ctx.initialize() != null)
 			return visit(ctx.initialize());
+		if(ctx.expr() != null)
+			return tabs() + visit(ctx.expr()) + ";\n";
 		return visit(ctx.getChild(0));
 	}
 

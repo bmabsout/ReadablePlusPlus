@@ -10,6 +10,9 @@ class name
 
 	float pain static (const int yes | float no) = |int hohoho;a=3
 
+	|int a
+		b {c 3}
+
 	int main
 		const
 			int
