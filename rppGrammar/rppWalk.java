@@ -249,6 +249,8 @@ public class rppWalk extends rppBaseVisitor<String>
 		boolean first = true;
 		for (rppParser.InitializeContext itx : ctx.initialize())
 		{
+			if(!first && inArgs)
+				ans += ", ";
 			ans += visit(itx);
 			first = false;
 		}
@@ -480,6 +482,152 @@ public class rppWalk extends rppBaseVisitor<String>
 	public String visitAssignmentOperator(rppParser.AssignmentOperatorContext ctx)
 	{
 		return ctx.getChild(0).getText();
+	}
+
+	@Override
+	public String visitIfStatement(rppParser.IfStatementContext ctx)
+	{
+		String ans = tabs()+"if";
+		boolean first = true;
+		for(rppParser.StatementHelperContext stx : ctx.statementHelper())
+		{
+			if(!first)
+				ans += tabs()+"else if";
+			ans += visit(stx);
+			first = false;
+		}
+		if(ctx.scope() != null)
+		{
+			ans += tabs()+"else\n" + tabs() + "{\n";
+			tabCount++;
+			if(ctx.flat() != null)
+				ans += visit(ctx.flat());
+			ans += visit(ctx.scope());
+			tabCount--;
+			ans += tabs()+"}\n";
+		}
+		return ans;
+	}
+
+	@Override
+	public String visitWhileStatement(rppParser.WhileStatementContext ctx)
+	{
+		String ans = "";
+		if(ctx.statementHelper() != null)
+			ans +=  tabs() + "while" + visit(ctx.statementHelper());
+		else
+		{
+			ans += "\n" + tabs() + "{\n";
+			tabCount++;
+			if(ctx.flat() != null)
+				ans += visit(ctx.flat());
+			if(ctx.scope() != null)
+				ans += visit(ctx.scope());
+			tabCount--;
+			ans += tabs()+"} do(" + visit(ctx.logicExpr())+")\n";
+		}
+		return ans;
+	}
+
+	@Override
+	public String visitForStatement(rppParser.ForStatementContext ctx)
+	{
+		String ans = tabs() + "for(";
+		if(ctx.range() != null)
+		{
+			String range = ctx.range().getText();
+			String[] elems = range.split("\\s?\\.\\.\\s?");
+			ans += "int ____ = ";
+			if(elems[1].compareTo(elems[0]) > 0)
+				ans += elems[0] + "; ____ < " + elems[1] + "; ____++";
+			else
+				ans += elems[1] + "; ____ < " + elems[0] + "; ____++";
+
+			ans += ")\n";
+		}
+		ans += "\n" + tabs() + "{\n";
+		tabCount++;
+		if(ctx.flat() != null)
+			ans += visit(ctx.flat());
+		if(ctx.scope() != null)
+			ans += visit(ctx.scope());
+		tabCount--;
+		ans += tabs() +"}\n";
+		return ans;
+	}
+
+	@Override
+	public String visitSwitchStatement(rppParser.SwitchStatementContext ctx)
+	{
+		return tabs() + "switch("+visit(ctx.expr())+")\n" + visit(ctx.switchScope());
+	}
+
+	@Override
+	public String visitSwitchScope(rppParser.SwitchScopeContext ctx)
+	{
+		String ans = tabs()+"{\n";
+		tabCount++;
+		for (rppParser.CaseScopeContext stx: ctx.caseScope())
+			ans += visit(stx);
+
+		tabCount--;
+		ans += tabs() + "}\n";
+		return ans;
+	}
+
+	@Override
+	public String visitCaseScope(rppParser.CaseScopeContext ctx)
+	{
+		String ans = "";
+		rppParser.CasesContext cax = ctx.cases();
+		int numChildren = cax.getChildCount();
+		for(int i = 0; i < numChildren; i++)
+		{
+			if(!(cax.getChild(i) instanceof TerminalNode))
+			{
+
+				if(cax.getChild(i) instanceof rppParser.RangeContext)
+				{
+					String range = cax.getChild(i).getText();
+					String[] elems = range.split("\\s?\\.\\.\\s?");
+					int from = Integer.parseInt(elems[0]);
+					int to = Integer.parseInt(elems[1]);
+					for(int j = from;j < to; j++)
+						ans += tabs() + "case " + j + ":\n";
+				}
+				else
+					ans += tabs() + "case " + visit(cax.getChild(i))+":\n";
+			}
+		}
+		tabCount++;
+		if(ctx.line() != null)
+			ans += visit(ctx.line());
+		if(ctx.scope() != null)
+			ans += visit(ctx.scope());
+		ans += tabs() + "break;\n";
+		tabCount--;
+		return ans;
+	}
+
+	@Override
+	public String visitStatementHelper(rppParser.StatementHelperContext ctx)
+	{
+		String ans = "("+visit(ctx.logicExpr())+")\n"+tabs()+"{\n";
+		tabCount++;
+		if(ctx.scope() != null)
+			ans += visit(ctx.scope());
+		else
+			ans += visit(ctx.body());
+
+		tabCount--;
+		ans += tabs()+"}\n";
+		return ans;
+	}
+
+	@Override
+	public String visitLogicExpr(rppParser.LogicExprContext ctx)
+	{
+		return ctx.getText();
 	}
 
 }

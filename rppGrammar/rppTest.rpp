@@ -31,7 +31,7 @@ class name
 			|float a = fun callMe
 		elif a ~? b
 			switch fun yes
-				case 1 2 3
+				case 1..3
 					print no
 				case 5: print yes
 		else
@@ -40,6 +40,9 @@ class name
 				static
 					float b = 3
 					gloat a c d = 4
+
+		while a?b
+			functin a
 
 		for 0..10
 			printfn yes
