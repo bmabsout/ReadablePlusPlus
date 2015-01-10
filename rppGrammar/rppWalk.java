@@ -596,7 +596,7 @@ public class rppWalk extends rppBaseVisitor<String>
 						ans += tabs() + "case " + j + ":\n";
 				}
 				else
-					ans += tabs() + "case " + visit(cax.getChild(i))+":\n";
+					ans += tabs() + "case " + visit(cax.getChild(i)) + ":\n";
 			}
 		}
 		tabCount++;

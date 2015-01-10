@@ -3,7 +3,11 @@
 	[
 		{
 			"follow_symlinks": true,
-			"path": "~/Dropbox/ReadablePlusPlus"
+			"path": "/mnt/DROP/Dropbox/ReadablePlusPlus/rppGrammar"
 		}
-	]
+	],
+	"javatar":
+	{
+		"source_folder": "/mnt/DROP/Dropbox/ReadablePlusPlus/rppGrammar/"
+	}
 }

@@ -281,7 +281,7 @@ statementHelper
 ;
 //------------------------------statements--------------------------
 
-logicExpr : logic ;
+logicExpr : logic;
 
 arithmetic
 :	arithmetic (Star|Over) arithmetic
@@ -301,13 +301,13 @@ logic
 |	LeftParen logic RightParen
 |	arithmetic
 ;
+
 And: ' '* '&' ' '*;
 Comparison
 :	' '*
 	(
-		'~?' | '<'  | '?' | '>'
-	|	'<?'| '?<' | '>?' | '?>'
-	|	'?|'| '|?'
+		'~?'|'<' |'?' |'>'
+	|	'<?'|'?<'|'>?'|'?>'
 	)
 	' '*
 ;
@@ -355,7 +355,9 @@ type         : ID Pointer*;
 name         : ID;
 range        : closedExpr '..' closedExpr;
 ID           : NonDigit (Digit|NonDigit)*;
+fragment
 Digit        : [0-9];
+fragment
 NonDigit     : [a-zA-Z_];
 LeftParen    : '(' ' '*;
 RightParen   : ' '* ')';
